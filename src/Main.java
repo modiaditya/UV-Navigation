@@ -69,9 +69,10 @@ public class Main {
 			
 			for(int j=0;j<d.length;j++)
 			{
-				System.out.println(d[j].getStart_point());
-				o.getData(d[j].getStart_point(), d[j].getEnd_point());
-				System.out.println(d[j].getEnd_point());
+				System.out.println(d[j]);
+				//System.out.println(d[j].getStart_point());
+				//o.getData(d[j].getStart_point(), d[j].getEnd_point());
+				//System.out.println(d[j].getEnd_point());
 			}
 			
 		}

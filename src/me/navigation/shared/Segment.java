@@ -14,7 +14,12 @@ public class Segment {
 	private double uvb;
 	private int no_of_readings;
 	
-	
+	@Override
+	public String toString() {
+		
+		return start_point+" to "+end_point;
+		
+	}
 	
 	public LatLong getStart_point() {
 		return start_point;

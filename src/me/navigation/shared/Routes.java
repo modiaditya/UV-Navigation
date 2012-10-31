@@ -99,7 +99,7 @@ public class Routes {
 //	}
 	public String toString()
 	{
-		return distance+","+duration+","+start_location+","+end_location+","+uva+","+summary;
+		return distance+","+duration+","+start_location+","+end_location+","+uva+","+uvb+","+summary;
 	}
 	
 	public String getGoogleAPIJson() {

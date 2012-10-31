@@ -58,7 +58,9 @@ public class Step {
 		
 		JsonElement jElement = new JsonParser().parse(jsonLine);
 		JsonArray jArray = jElement.getAsJsonObject().getAsJsonArray("coordinates");
-		segments =  new Segment[jArray.size()];
+		// size -1 is done since we pair the segments and 
+		//thus if there are n segments, there would be n-1 pairs
+		segments =  new Segment[jArray.size()-1];		
 		String one ;
 		String two ;
 		String[] sp;
@@ -77,7 +79,7 @@ public class Step {
 			
 			
 			p2= new LatLong();
-			two = jArray.get(i).toString();
+			two = jArray.get(i+1).toString();
 			two = two.replace('[', ' ');
 			two = two.replace(']', ' ');
 			sp = two.trim().split(",");
@@ -85,7 +87,7 @@ public class Step {
 			p2.setLongitude(Double.parseDouble(sp[0]));
 			
 			segments[i].setStart_point(p1);
-			segments[i].setStart_point(p2);
+			segments[i].setEnd_point(p2);
 			one ="";
 			two ="";
 		}
@@ -93,6 +95,11 @@ public class Step {
 		
 	}
 	
+	@Override
+	public String toString() {
+		
+		return distance+","+duration+","+start_point+","+end_point+","+uva+","+uvb+","+summary;
+	}
 	public String getGoogleAPIJson() {
 		return googleAPIJson;
 	}
