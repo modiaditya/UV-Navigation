@@ -6,6 +6,7 @@ import me.navigation.server.BoundingBox;
 import me.navigation.server.HttpSender;
 import me.navigation.shared.LatLong;
 import me.navigation.shared.Routes;
+import me.navigation.shared.Segment;
 import me.navigation.shared.UVData;
 
 
@@ -64,13 +65,13 @@ public class Main {
 		for(int i=0;i<allRoutes[index].getSteps().length;i++)
 		{
 			System.out.println(allRoutes[index].getSteps()[i]);
-			UVData[] d = allRoutes[index].getSteps()[i].getPoints();
+			Segment[] d = allRoutes[index].getSteps()[i].getSegments();
 			
-			for(int j=0;j<d.length-1;j++)
+			for(int j=0;j<d.length;j++)
 			{
-				System.out.println(d[j].getPoint());
-				o.getData(d[j].getPoint(), d[j+1].getPoint());
-				System.out.println(d[j+1].getPoint());
+				System.out.println(d[j].getStart_point());
+				o.getData(d[j].getStart_point(), d[j].getEnd_point());
+				System.out.println(d[j].getEnd_point());
 			}
 			
 		}
