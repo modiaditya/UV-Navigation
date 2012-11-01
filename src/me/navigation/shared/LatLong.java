@@ -1,5 +1,8 @@
 package me.navigation.shared;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class LatLong {
 	
 		private Double latitude;
@@ -8,6 +11,15 @@ public class LatLong {
 		public LatLong() {
 		}
 
+		
+//		public JSONObject getJson(String loc) throws JSONException
+//		{
+//			JSONObject obj = new JSONObject();
+//			JSONObject lat = new JSONObject().put("lat",this.latitude);
+//			JSONObject lng = new JSONObject().put("lat",this.longitude);
+//			obj.put(loc,)
+//			
+//		}
 		public LatLong(Double latitude, Double longitude) {
 			this.latitude = latitude;
 			this.longitude = longitude;

@@ -29,7 +29,12 @@ public class DatabaseOperations {
     ResultSet rs = null;
     String url, username, password;
     
-    
+    public DatabaseOperations()
+    {
+    	this.url = "jdbc:mysql://localhost:3306/project";
+        this.username = "adityauv";
+        this.password = "uvnavigation";
+    }
     public DatabaseOperations(String url, String username, String password)
     {
     	this.url=url;

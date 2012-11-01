@@ -90,6 +90,7 @@ public class Step {
 			segments[i].setEnd_point(p2);
 			one ="";
 			two ="";
+			segments[i].initialize();
 		}
 		
 		
