@@ -12,6 +12,18 @@ public class LatLong {
 		}
 
 		
+		public JSONObject getJson() throws JSONException
+		{
+			JSONObject loc =new JSONObject();
+			loc.put("lat", this.latitude);
+			loc.put("lng", this.longitude);
+			//JSONObject o = new JSONObject();
+			//o.put(obj, loc);
+			return loc;
+			
+		}
+		
+		
 //		public JSONObject getJson(String loc) throws JSONException
 //		{
 //			JSONObject obj = new JSONObject();

@@ -20,8 +20,8 @@ import com.google.gson.JsonParser;
 
 public class Segment {
 
-	private LatLong start_point;
-	private LatLong end_point;
+	private LatLong start_location;
+	private LatLong end_location;
 	private double uva=0;
 	private double uvb=0;
 	private int no_of_readings=0;
@@ -37,7 +37,7 @@ public class Segment {
 	@Override
 	public String toString() {
 		
-		return start_point+","+end_point+","+uva+","+uvb+","+no_of_readings;
+		return start_location+","+end_location+","+uva+","+uvb+","+no_of_readings;
 		
 	}
 	
@@ -94,22 +94,22 @@ public class Segment {
 	}
 	
 	public LatLong getStart_point() {
-		return start_point;
+		return start_location;
 	}
 
 
 	public void setStart_point(LatLong start_point) {
-		this.start_point = start_point;
+		this.start_location = start_point;
 	}
 
 
 	public LatLong getEnd_point() {
-		return end_point;
+		return end_location;
 	}
 
 
 	public void setEnd_point(LatLong end_point) {
-		this.end_point = end_point;
+		this.end_location = end_point;
 	}
 
 

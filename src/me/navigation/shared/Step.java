@@ -2,6 +2,9 @@ package me.navigation.shared;
 
 import java.net.SocketTimeoutException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import me.navigation.server.HttpSender;
 
 import com.google.gson.JsonArray;
@@ -14,8 +17,8 @@ public class Step {
 	private String googleAPIJson;
 	private int distance;
 	private int duration;
-	private LatLong start_point;
-	private LatLong end_point;
+	private LatLong start_location;
+	private LatLong end_location;
 	private double uva;
 	private double uvb;
 	private String summary;
@@ -28,8 +31,8 @@ public class Step {
 		JsonObject jObjectStep = jElementStep.getAsJsonObject();
 		this.distance =  Integer.parseInt(jObjectStep.getAsJsonObject("distance").get("value").toString());		
 		this.duration = Integer.parseInt(jObjectStep.getAsJsonObject("duration").get("value").toString());
-		this.start_point = new LatLong(Double.parseDouble(jObjectStep.getAsJsonObject("start_location").get("lat").toString()), Double.parseDouble(jObjectStep.getAsJsonObject("start_location").get("lng").toString())); 
-		this.end_point = new LatLong(Double.parseDouble(jObjectStep.getAsJsonObject("end_location").get("lat").toString()), Double.parseDouble(jObjectStep.getAsJsonObject("end_location").get("lng").toString()));
+		this.start_location = new LatLong(Double.parseDouble(jObjectStep.getAsJsonObject("start_location").get("lat").toString()), Double.parseDouble(jObjectStep.getAsJsonObject("start_location").get("lng").toString())); 
+		this.end_location = new LatLong(Double.parseDouble(jObjectStep.getAsJsonObject("end_location").get("lat").toString()), Double.parseDouble(jObjectStep.getAsJsonObject("end_location").get("lng").toString()));
 		this.summary = jObjectStep.get("html_instructions").toString();
 		setSegments();
 		//this.segments = new Segments[getNo_of_segments()];
@@ -96,10 +99,40 @@ public class Step {
 		
 	}
 	
+	public JSONObject getJson() throws JSONException
+	{
+		JSONObject obj = new JSONObject();
+		obj.put("distance", this.distance);
+		//JSONObject duration = new JSONObject();
+		obj.put("duration", this.duration);
+		//JSONObject start_location = new JSONObject();
+		obj.put("start_location", this.start_location.getJson());
+		//JSONObject end_location = new JSONObject();
+		obj.put("end_location",this.end_location.getJson());
+		obj.put("uv",this.getUVJson());
+		//JSONObject summary = new JSONObject();
+		obj.put("summary",this.summary);
+		
+
+		return obj;
+		
+		
+	}
+	
+	public  JSONObject getUVJson() throws JSONException
+	{
+		JSONObject uv = new JSONObject();
+		uv.put("uva", this.uva);
+		uv.put("uvb", this.uvb);
+		return uv;
+		
+		
+	}
+	
 	@Override
 	public String toString() {
 		
-		return distance+","+duration+","+start_point+","+end_point+","+uva+","+uvb+","+summary;
+		return distance+","+duration+","+start_location+","+end_location+","+uva+","+uvb+","+summary;
 	}
 	public String getGoogleAPIJson() {
 		return googleAPIJson;
@@ -120,16 +153,16 @@ public class Step {
 		this.duration = duration;
 	}
 	public LatLong getStart_point() {
-		return start_point;
+		return start_location;
 	}
 	public void setStart_point(LatLong start_point) {
-		this.start_point = start_point;
+		this.start_location = start_point;
 	}
 	public LatLong getEnd_point() {
-		return end_point;
+		return end_location;
 	}
 	public void setEnd_point(LatLong end_point) {
-		this.end_point = end_point;
+		this.end_location = end_point;
 	}
 	public double getUva() {
 		return uva;
