@@ -19,8 +19,8 @@ public class Step {
 	private int duration;
 	private LatLong start_location;
 	private LatLong end_location;
-	private double uva;
-	private double uvb;
+	private double uva=0;
+	private double uvb=0;
 	private String summary;
 	private Segment[] segments;
 	
@@ -35,6 +35,9 @@ public class Step {
 		this.end_location = new LatLong(Double.parseDouble(jObjectStep.getAsJsonObject("end_location").get("lat").toString()), Double.parseDouble(jObjectStep.getAsJsonObject("end_location").get("lng").toString()));
 		this.summary = jObjectStep.get("html_instructions").toString();
 		setSegments();
+		
+		//used to set the UVA and UVB values depending on the segment readings
+		setUVValues();
 		//this.segments = new Segments[getNo_of_segments()];
 		//this.points= new UVData[this.getNo_of_segments()];
 		//this.setPoints();
@@ -97,8 +100,29 @@ public class Step {
 		}
 		
 		
+		
+		
 	}
 	
+	private void setUVValues() {
+		
+		int segmentLength = segments.length;
+		
+		for(int i=0;i<segmentLength;i++)
+		{
+			uva+=segments[i].getUva();
+			uvb+=segments[i].getUvb();
+		}
+		
+		// get the average readings
+		if(segmentLength>0)
+		{
+			uva/=segmentLength;
+			uvb/=segmentLength;
+		}
+		
+	}
+
 	public JSONObject getJson() throws JSONException
 	{
 		JSONObject obj = new JSONObject();
@@ -112,7 +136,7 @@ public class Step {
 		obj.put("uv",this.getUVJson());
 		//JSONObject summary = new JSONObject();
 		obj.put("summary",this.summary);
-		
+
 
 		return obj;
 		

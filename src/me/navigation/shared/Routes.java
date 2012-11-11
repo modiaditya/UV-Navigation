@@ -2,6 +2,10 @@ package me.navigation.shared;
 
 import java.net.SocketTimeoutException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import me.navigation.server.API_Parser;
 import me.navigation.server.HttpSender;
 
@@ -52,7 +56,79 @@ public class Routes {
 			steps[i].setGoogleAPIJson(API_Parser.getStepInformation(googleAPIJson, i));
 			steps[i].initialize();
 		}
+		
+		setUVValues();
+		
 	}
+	
+	private void setUVValues() {
+		
+		//taking weighted average
+		double numeratorUVA = 0;
+		double denominatorUVA = 0;
+		double numeratorUVB = 0;
+		double denominatorUVB = 0;
+		
+		for(int i=0;i<steps.length;i++)
+		{
+			if(steps[i].getUva()>0)
+			{
+				numeratorUVA+= steps[i].getDistance()*steps[i].getUva();
+				denominatorUVA += steps[i].getDistance();
+			}
+			
+			if(steps[i].getUvb()>0)
+			{
+				numeratorUVB+=steps[i].getDistance()*steps[i].getUvb();
+				denominatorUVB += steps[i].getDistance();
+			}
+			
+		}
+		
+		uva = numeratorUVA/denominatorUVA;
+		uvb = numeratorUVB/denominatorUVB;
+		
+	}
+
+	public JSONObject getJson() throws JSONException
+	{
+		JSONObject obj = new JSONObject();
+		obj.put("distance", this.distance);
+		//JSONObject duration = new JSONObject();
+		obj.put("duration", this.duration);
+		//JSONObject start_location = new JSONObject();
+		obj.put("start_location", this.start_location.getJson());
+		//JSONObject end_location = new JSONObject();
+		obj.put("end_location",this.end_location.getJson());
+		obj.put("uv",this.getUVJson());
+		//JSONObject summary = new JSONObject();
+		obj.put("summary",this.summary);
+
+		//JSONObject[] stepsJson = new JSONObject[steps.length]; 
+		JSONArray arr = new JSONArray();
+		
+		for(int i =0 ;i < steps.length;i++)
+		{
+			arr.put(i,steps[i].getJson());
+			
+		}
+		obj.put("steps", arr);
+		
+		return obj;	
+	}
+
+	
+	
+	public  JSONObject getUVJson() throws JSONException
+	{
+		JSONObject uv = new JSONObject();
+		uv.put("uva", this.uva);
+		uv.put("uvb", this.uvb);
+		return uv;
+		
+		
+	}
+	
 	
 	
 	
