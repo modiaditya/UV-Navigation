@@ -1,3 +1,4 @@
+import java.io.ObjectInputStream.GetField;
 import java.net.SocketTimeoutException;
 
 import org.json.JSONArray;
@@ -16,9 +17,65 @@ import me.navigation.shared.UVData;
 
 public class Main {
 
-	public int getMinUVARoute(Routes[] route)
+	public static int getMinUVARoute(Routes[] route)
 	{
-		return -1;
+		double min=999;
+		int index=-1;
+		
+		//sum all the values
+		for(int i=0;i<route.length;i++)
+		{
+			if(min>route[i].getUva())
+			{
+				min = route[i].getUva();
+				index = i;
+			}
+			
+		}
+		
+		return index;
+		
+	}
+	
+	
+	public static int getMinUVBRoute(Routes[] route)
+	{
+		double min=999;
+		int index=-1;
+		
+		//sum all the values
+		for(int i=0;i<route.length;i++)
+		{
+			if(min>route[i].getUvb())
+			{
+				min = route[i].getUvb();
+				index = i;
+			}
+			
+		}
+		
+		return index;
+		
+	}
+	
+	public static int getMinUVABRoute(Routes[] route)
+	{
+		double min=999;
+		int index=-1;
+		
+		//sum all the values
+		for(int i=0;i<route.length;i++)
+		{
+			if(min>route[i].getUvb())
+			{
+				min = (route[i].getUvb()+route[i].getUvb())/2;
+				index = i;
+			}
+			
+		}
+		
+		return index;
+		
 	}
 	
 	public static void main(String args[]) throws Exception
@@ -100,6 +157,18 @@ public class Main {
 			
 			JSONObject obj = new JSONObject();
 			obj.put("routes", arr);
+			
+			
+			int minRoute = getMinUVARoute(allRoutes);
+			
+			JSONObject minUVARoute = new JSONObject();
+			minUVARoute.put("routes", allRoutes[minRoute].getJson());
+			
+			System.out.println(minUVARoute);
+			System.out.println("Min UVB route is "+getMinUVBRoute(allRoutes));
+			
+			int minUVABRoute = getMinUVABRoute(allRoutes);
+			System.out.println("Min UVA and UVB route is "+minUVABRoute);
 			
 			System.out.println(obj.toString());
 			
