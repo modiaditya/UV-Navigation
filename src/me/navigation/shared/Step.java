@@ -23,6 +23,7 @@ public class Step {
 	private double uvb=0;
 	private String summary;
 	private Segment[] segments;
+	private final int minNoOfReadings = 6;
 	
 	
 	public void initialize() throws Exception
@@ -99,11 +100,69 @@ public class Step {
 			segments[i].initialize();
 		}
 		
+		//setSegmentUVValues();
+		
 		
 		
 		
 	}
 	
+	private void setSegmentUVValues() {
+		
+		Segment[] segments = this.getSegments();
+		double weight =0.5;
+		int totalReadingsTillNow=0;
+		int left, right;
+		double numerator = 0, denominator =0;
+		int count =0;
+		for(int i=0;i<segments.length;i++)
+		{
+			totalReadingsTillNow = 0;
+			if(segments[i].getNo_of_readings()>= minNoOfReadings)
+				continue;
+			
+			left  = i-1;
+			right = i+1;
+			count = 0;
+			//set initial readings in the numerator and denominator
+			
+			numerator = weight*segments[i].getNo_of_readings()*segments[i].getUva();
+			denominator = segments[i].getNo_of_readings()*weight;
+			totalReadingsTillNow = segments[i].getNo_of_readings();
+			
+			while((left >= 0 || right < segments.length) && totalReadingsTillNow < minNoOfReadings )
+			{	
+				weight = weight-count*0.1;
+				//search left
+				if(left >=0)
+				{
+					totalReadingsTillNow+=segments[left].getNo_of_readings();
+					numerator += weight*segments[left].getNo_of_readings()*segments[left].getUva();
+					denominator+= segments[left].getNo_of_readings()*weight;
+					left--;
+					
+				}
+				
+				//search right
+				if(right< segments.length)
+				{
+					totalReadingsTillNow+=segments[right].getNo_of_readings();
+					numerator += weight*segments[right].getNo_of_readings()*segments[right].getUva();
+					denominator+= segments[right].getNo_of_readings()*weight;
+					right++;
+					
+				}
+				count++;
+			
+			}
+			segments[i].setNo_of_readings(totalReadingsTillNow);
+			segments[i].setUva(numerator/denominator);
+			
+		}
+		
+		
+	}
+
 	private void setUVValues() {
 		
 		int segmentLength = segments.length;

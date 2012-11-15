@@ -117,10 +117,10 @@ public class Main {
 			
 			String endpoint = "http://maps.googleapis.com/maps/api/directions/json";
 			
-			String requestParameters = "sensor=false&mode=driving&alternatives=true&origin="+source.getLatitude()+","+source.getLongitude()+"&destination="+destination.getLatitude()+","+destination.getLongitude();
+			String requestParameters = "sensor=false&mode=walking&alternatives=true&origin="+source.getLatitude()+","+source.getLongitude()+"&destination="+destination.getLatitude()+","+destination.getLongitude();
 			String googleMapsResult=  HttpSender.sendGetRequest(endpoint, requestParameters);
 			
-			System.out.println(googleMapsResult);
+			//System.out.println(googleMapsResult);
 			Routes[] allRoutes;
 			
 			int numberOfRoutes = API_Parser.getNumberOfRoutes(googleMapsResult);
@@ -129,6 +129,7 @@ public class Main {
 			JSONArray arr =  new JSONArray();
 			
 			// initializing all routes
+			// print all the segments on the route
 			for(int i=0;i<allRoutes.length;i++)
 			{	
 				allRoutes[i] = new Routes();
@@ -143,12 +144,12 @@ public class Main {
 					for(j=0;j<seg.length;j++)
 					{
 						System.out.print(seg[j].getStart_point());
-						System.out.println(" "+seg[j].getUva()+" "+seg[j].getUvb());
+						System.out.println(","+seg[j].getUva()+","+seg[j].getUvb());
 					}
 					System.out.println(seg[j-1].getEnd_point());
-					System.out.println("-----------");
+					//System.out.println("-----------");
 				}
-				System.out.println("------------------------");
+				//System.out.println("------------------------");
 				
 				
 				//System.out.println(allRoutes[i].getJson());
@@ -164,11 +165,11 @@ public class Main {
 			JSONObject minUVARoute = new JSONObject();
 			minUVARoute.put("routes", allRoutes[minRoute].getJson());
 			
-			System.out.println(minUVARoute);
-			System.out.println("Min UVB route is "+getMinUVBRoute(allRoutes));
+			//System.out.println(minUVARoute);
+			//System.out.println("Min UVB route is "+getMinUVBRoute(allRoutes));
 			
 			int minUVABRoute = getMinUVABRoute(allRoutes);
-			System.out.println("Min UVA and UVB route is "+minUVABRoute);
+			//System.out.println("Min UVA and UVB route is "+minUVABRoute);
 			
 			System.out.println(obj.toString());
 			
