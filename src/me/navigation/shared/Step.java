@@ -34,7 +34,7 @@ public class Step {
 		this.duration = Integer.parseInt(jObjectStep.getAsJsonObject("duration").get("value").toString());
 		this.start_location = new LatLong(Double.parseDouble(jObjectStep.getAsJsonObject("start_location").get("lat").toString()), Double.parseDouble(jObjectStep.getAsJsonObject("start_location").get("lng").toString())); 
 		this.end_location = new LatLong(Double.parseDouble(jObjectStep.getAsJsonObject("end_location").get("lat").toString()), Double.parseDouble(jObjectStep.getAsJsonObject("end_location").get("lng").toString()));
-		this.summary = jObjectStep.get("html_instructions").toString();
+		this.summary = jObjectStep.get("html_instructions").toString().toString().replace("\"","");
 		setSegments();
 		
 		//used to set the UVA and UVB values depending on the segment readings

@@ -30,6 +30,7 @@ public class Routes {
 	private double uvb;
 	private String summary;
 	private Step[] steps;
+	private String polylines;
 	
 	/**
 	 * 
@@ -41,7 +42,8 @@ public class Routes {
 	{
 		JsonElement jElement = new JsonParser().parse(googleAPIJson);
 		JsonObject jObject = jElement.getAsJsonObject();
-		summary = jObject.get("summary").toString();
+		summary = jObject.get("summary").toString().toString().replace("\"","");
+		polylines = jObject.getAsJsonObject("overview_polyline").get("points").toString().replace("\"","");
 		JsonObject legs = jObject.getAsJsonArray("legs").get(0).getAsJsonObject();
 		distance =  Integer.parseInt(legs.getAsJsonObject("distance").get("value").toString());		
 		duration = Integer.parseInt(legs.getAsJsonObject("duration").get("value").toString());
@@ -103,7 +105,7 @@ public class Routes {
 		obj.put("uv",this.getUVJson());
 		//JSONObject summary = new JSONObject();
 		obj.put("summary",this.summary);
-
+		obj.put("polylines", this.polylines);
 		//JSONObject[] stepsJson = new JSONObject[steps.length]; 
 		JSONArray arr = new JSONArray();
 		
@@ -263,6 +265,14 @@ public class Routes {
 
 	public void setUvb(double uvb) {
 		this.uvb = uvb;
+	}
+
+	public String getPolylines() {
+		return polylines;
+	}
+
+	public void setPolylines(String polylines) {
+		this.polylines = polylines;
 	}
 
 }
