@@ -19,7 +19,7 @@ public class Main {
 
 	public static int getMinUVARoute(Routes[] route)
 	{
-		double min=999;
+		double min=999999;
 		int index=-1;
 		
 		//sum all the values
@@ -112,8 +112,17 @@ public class Main {
 		boolean testRoutes = true;
 		if(testRoutes)
 		{
-			LatLong source = new LatLong(Double.parseDouble(args[0]), Double.parseDouble(args[1]));
-			LatLong destination = new LatLong(Double.parseDouble(args[2]), Double.parseDouble(args[3]));
+			LatLong source;
+			LatLong destination;
+			if(args.length==4 || Integer.parseInt(args[0]) == 0){
+				source = new LatLong(Double.parseDouble(args[0]), Double.parseDouble(args[1]));
+				destination = new LatLong(Double.parseDouble(args[2]), Double.parseDouble(args[3]));
+			}
+			else
+			{
+				source = new LatLong(Double.parseDouble(args[1]), Double.parseDouble(args[2]));
+				destination = new LatLong(Double.parseDouble(args[3]), Double.parseDouble(args[4]));
+			}
 			
 			String endpoint = "http://maps.googleapis.com/maps/api/directions/json";
 			
@@ -143,10 +152,10 @@ public class Main {
 					int j=0;
 					for(j=0;j<seg.length;j++)
 					{
-						System.out.print(seg[j].getStart_point());
-						System.out.println(","+seg[j].getUva()+","+seg[j].getUvb());
+					//	System.out.print(seg[j].getStart_point());
+					//	System.out.println(","+seg[j].getUva()+","+seg[j].getUvb());
 					}
-					System.out.println(seg[j-1].getEnd_point());
+					//System.out.println(seg[j-1].getEnd_point());
 					//System.out.println("-----------");
 				}
 				//System.out.println("------------------------");
@@ -160,24 +169,51 @@ public class Main {
 			obj.put("routes", arr);
 			
 			
-			int minRoute = getMinUVARoute(allRoutes);
 			
-			JSONObject minUVARoute = new JSONObject();
-			minUVARoute.put("routes", allRoutes[minRoute].getJson());
+			
+			//JSONObject minUVARoute = new JSONObject();
+			//minUVARoute.put("routes", allRoutes[minRoute].getJson());
 			
 			//System.out.println(minUVARoute);
 			//System.out.println("Min UVB route is "+getMinUVBRoute(allRoutes));
 			
-			int minUVABRoute = getMinUVABRoute(allRoutes);
+			
 			//System.out.println("Min UVA and UVB route is "+minUVABRoute);
 			
-			System.out.println(obj.toString());
+			if(args.length==4 || Integer.parseInt(args[0]) == 0)
+				System.out.println(obj.toString());
+			
+			
+			else
+			{
+				JSONObject output= new JSONObject();
+				int expectedOutput = Integer.parseInt(args[0]);
+				
+				switch(expectedOutput)
+				{
+					case 1:
+						output.put("routes", allRoutes[getMinUVARoute(allRoutes)].getJson());
+						break;
+						
+					case 2:
+						output.put("routes", allRoutes[getMinUVBRoute(allRoutes)].getJson());
+						break;
+						
+					case 3:
+						output.put("routes", allRoutes[getMinUVABRoute(allRoutes)].getJson());
+						break;
+						
+				}
+				System.out.println(output);
+					
+				
+			}
 			
 			//database related
-			String url = "jdbc:mysql://localhost:3306/project";
-	        String username = "adityauv";
-	        String password = "uvnavigation";
-			DatabaseOperations o = new DatabaseOperations(url, username, password);
+//			String url = "jdbc:mysql://localhost:3306/project";
+//	        String username = "adityauv";
+//	        String password = "uvnavigation";
+//			DatabaseOperations o = new DatabaseOperations(url, username, password);
 			
 			
 			// database related ends
