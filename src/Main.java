@@ -19,7 +19,7 @@ public class Main {
 
 	public static int getMinUVARoute(Routes[] route)
 	{
-		double min=999999;
+		double min=999;
 		int index=-1;
 		
 		//sum all the values
@@ -129,7 +129,7 @@ public class Main {
 			String requestParameters = "sensor=false&mode=walking&alternatives=true&origin="+source.getLatitude()+","+source.getLongitude()+"&destination="+destination.getLatitude()+","+destination.getLongitude();
 			String googleMapsResult=  HttpSender.sendGetRequest(endpoint, requestParameters);
 			
-			//System.out.println(googleMapsResult);
+			System.out.println(googleMapsResult);
 			Routes[] allRoutes;
 			
 			int numberOfRoutes = API_Parser.getNumberOfRoutes(googleMapsResult);
