@@ -1,0 +1,213 @@
+<html>
+<head>
+		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'></script>
+        <script type="text/javascript"
+	    	  src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCryoDKp8DrBdhzK9Xw1c3VLrbnU5whlqU&sensor=false">
+    	</script>
+    	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false"></script>
+		<style type="text/css">
+		#directionsPanel {
+			float: left;
+			width: 28%;
+			height: 100%;
+			padding-left: 10px;
+		}
+		#map_canvas {
+			float: right;
+			width: 70%;
+			height: 100%;
+		}
+		</style>
+</head>
+<body>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+		<!-- Reference http://www.darian-brown.com/pass-a-php-array-to-javascript-as-json-using-ajax-and-json_encode/ -->
+        <!-- this UL will be populated with the data from the php array -->
+		
+
+        <script type='text/javascript'>
+        $.urlParam = function(name){
+			var results = new RegExp('[\\?&amp;]' + name + '=([^&amp;#]*)').exec(window.location.href);
+			return results[1] || 0;
+		}
+		function GetURLParameter(sParam)
+		{
+			var sPageURL = window.location.search.substring(1);
+			var sURLVariables = sPageURL.split('&');
+			for (var i = 0; i < sURLVariables.length; i++) 
+			{
+				var sParameterName = sURLVariables[i].split('=');
+				if (sParameterName[0] == sParam) 
+				{
+					return sParameterName[1];
+				}
+			}
+		}
+		
+		function getDirections(){
+			console.log("Inside getDirections");
+			var option =document.getElementById("uv").value;
+			var lat1 = document.getElementById("lat1").value;
+			var lat2 = document.getElementById("lat2").value;
+			var lng1 = document.getElementById("lng1").value;
+			var lng2 = document.getElementById("lng2").value;
+			
+			var myJSONObject = {"option":option,"lat1":lat1,"lng1":lng1,"lat2":lat2,"lng2":lng2};
+			console.log(myJSONObject);
+			
+			hideModal();
+			showSpinner();
+			/* call the php that has the php array which is json_encoded */
+			$.getJSON('json_encoded_array.php',myJSONObject,function(data) {
+			//var t = JSON.parse(data);
+			
+			showDirections(data.routes);
+			showMap(data.routes.polylines);
+			console.log(data.routes);                
+			hideSpinner();
+
+			});
+			
+		}
+		$(document).ready(function(){
+			showModal();
+		});
+	//	$(document).ready(function(){
+    //    		console.log(GetURLParameter('technology'));
+     //   		var option =GetURLParameter('option');
+     //   		var myJSONObject = {"option":option};
+                /* call the php that has the php array which is json_encoded */
+        //        $.getJSON('json_encoded_array.php',myJSONObject,function(data) {
+	  	      	//var t = JSON.parse(data);
+	  	//     	showMap(data.routes.polylines);
+	  	//      	console.log(data.routes);
+//                alert(data[0]);
+				//for (var counter in jsonData.routes) {
+			 	//	console.log(counter.summary);
+				 //}
+                
+                     
+      //          });
+
+      //  });
+        
+        
+        function showSpinner()
+        {
+        	$('#spinnerModal').modal('show')        
+        }
+        
+        function hideSpinner()
+        {
+        	$('#spinnerModal').modal('hide')
+        }
+        
+        function hideModal()
+        {
+        	$('#myModal').modal('hide')
+        }
+        function showModal()
+        {
+        	$('#myModal').modal('show')
+        }
+        function showMap(polyline) {
+			var lat1 = document.getElementById("lat1").value;
+			var lat2 = document.getElementById("lat2").value;
+			var lng1 = document.getElementById("lng1").value;
+			var lng2 = document.getElementById("lng2").value;
+
+      		var polyCoorArr = new Array();
+      		polyCoorArr= google.maps.geometry.encoding.decodePath(polyline);
+			var mapOptions = {
+				zoom: 16,
+				center: new google.maps.LatLng(34.062863,-118.450516),
+				mapTypeId: google.maps.MapTypeId.ROADMAP
+			}
+			var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+		
+			var flightPath ;
+		
+			flightPath = new google.maps.Polyline({
+			path: polyCoorArr,
+			strokeColor: '#FF0000',
+			strokeOpacity: 1.0,
+			strokeWeight: 2
+			});
+			flightPath.setMap(map);
+			var marker = new google.maps.Marker({
+			  position:polyCoorArr[0],
+			  map: map,
+			  title:'source'
+			  
+			});
+			marker = new google.maps.Marker({
+			  position:polyCoorArr[polyCoorArr.length-1],
+			  map: map,
+			  title:'destination'
+			  
+			});
+  
+		}   
+		
+		function showDirections(data)
+		{
+			
+			var directions = document.getElementById("directionsPanel");
+			directions.innerHTML = "<h3>Directions</h3>"+"1. "+data.steps[0].summary;
+			for(i=1;i<data.steps.length;i++)
+			{
+				directions.innerHTML +="<br/>"+ (i+1) +"."+" "+data.steps[i].summary;
+			}
+		}  
+        </script>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+         
+        	<a class="brand" href="javascript:void(0);" onclick="showModal();">UV Navigation Web Application</a>
+         	<div class="nav-collapse collapse">
+            	<ul class="nav">
+              		<li class="active"><a href="javascript:void(0);" onclick="showModal();">Get Directions</a></li>
+				</ul>
+			</div>              
+              	
+        </div>
+      </div>
+    </div>
+ <div>
+ <br/>
+  <br/>
+   <br/>
+ <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+ <form >
+ <div class="modal-header">
+ 	Enter source and destination
+ </div>
+ <div class="modal-body">
+ Minimize <select id="uv" name="uv">
+	<option value="1">UVA</option>
+	<option value="2">UVB</option>
+	<option value="3">Average UVA and UVB</option>
+</select><br/>
+From:<br/> 
+Lat &nbsp;<input class="input-small" type="text" value="34.066454" id="lat1" /> &nbsp; &nbsp; Lng &nbsp; <input class="input-small" type="text" value="-118.45307" id="lng1"/>
+<br />
+<br/>
+
+To:<br/> Lat &nbsp;<input class="input-small" type="text" value="34.059504" id="lat2"/> &nbsp;&nbsp; Lng &nbsp; <input class="input-small" type="text" value="-118.44777" id="lng2"/> <br />
+<br/>
+<input type="button" class="btn btn-primary" value="Get Directions" onclick="getDirections();" />
+ </div>
+ </div> 
+ </form>
+ <div id="spinnerModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+ <img src="loading.gif">
+ </div>
+<div id="directionsPanel"></div>
+
+
+ <div id="map_canvas" ></div>
+</body>
+</html>
