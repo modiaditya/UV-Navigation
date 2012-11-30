@@ -14,6 +14,7 @@ import me.navigation.shared.LatLong;
 /**
  * @author Aditya
  * does all the parsing for the Google API
+ * It acts as a wrapper for parsing the JSON.
  * 
  */
 public class API_Parser {

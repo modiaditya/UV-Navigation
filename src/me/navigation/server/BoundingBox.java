@@ -7,6 +7,7 @@ import me.navigation.shared.LatLong;
  * @author Aditya
  * This class is responsible to get the bounbing box when we pass it two points
  * An object of this class should be created 
+ * Its purpose is to mainly counter the error due to GPS readings by creating a box to get the points
  */
 public class BoundingBox {
 

@@ -16,6 +16,8 @@ import com.google.gson.JsonParser;
 
 /**
  * @author Aditya
+ * This class is used to intialize the route information.
+ * It gets data from Google Maps and the also calls the steps to be initialized.
  *
  */
 public class Routes {
@@ -35,7 +37,7 @@ public class Routes {
 	/**
 	 * 
 	 * Initializes all the class variables in the function
-	 * @throws SocketTimeoutException 
+	 * @throws Exception 
 	 * 
 	 */
 	public void initialize() throws Exception
@@ -56,13 +58,19 @@ public class Routes {
 		{
 			steps[i]= new Step();
 			steps[i].setGoogleAPIJson(API_Parser.getStepInformation(googleAPIJson, i));
+			// initializes the steps
 			steps[i].initialize();
 		}
 		
+		// after all the steps are initialized, this method is called to set the UV values
 		setUVValues();
 		
 	}
 	
+	/**
+	 * get the UV data of each step and then take a weighted average to set the UV exposure on each route.
+	 * 
+	 */
 	private void setUVValues() {
 		
 		//taking weighted average
@@ -71,6 +79,7 @@ public class Routes {
 		double numeratorUVB = 0;
 		double denominatorUVB = 0;
 		
+		// get the weighted average of the steps to find the UV across a specific route
 		for(int i=0;i<steps.length;i++)
 		{
 			if(steps[i].getUva()>0)
@@ -92,6 +101,11 @@ public class Routes {
 		
 	}
 
+	
+	/**
+	 * @return JSONObject, all the route information is encoded.
+	 * @throws JSONException
+	 */
 	public JSONObject getJson() throws JSONException
 	{
 		JSONObject obj = new JSONObject();

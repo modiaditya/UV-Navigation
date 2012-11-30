@@ -15,8 +15,23 @@ import me.navigation.shared.Step;
 import me.navigation.shared.UVData;
 
 
+/**
+ * @author Aditya
+ * This call is used to call the other classes by passing the source and destination points
+ * It also returns the routes with minimum uv exposure
+ * The criteria needs to be specified in the commandline arguments
+ * 1 => Minimum UVA, 2=> Minimum UVB, 3 => Minimum of Avg of UVA and UVB
+ * sample commandline arguments to run the code and get the route with minimum UVA exposure
+ * 1 34.066454 -118.45307 34.059504 -118.44777
+ *
+ */
 public class Main {
 
+	
+	/**
+	 * @param route, array of routes
+	 * @return the route number with the minimum UVA exposure
+	 */
 	public static int getMinUVARoute(Routes[] route)
 	{
 		double min=999;
@@ -38,6 +53,10 @@ public class Main {
 	}
 	
 	
+	/**
+	 * @param route, array of routes
+	 * @return the route number with the minimum UVB exposure
+	 */
 	public static int getMinUVBRoute(Routes[] route)
 	{
 		double min=999;
@@ -58,6 +77,10 @@ public class Main {
 		
 	}
 	
+	/**
+	 * @param route, array of routes
+	 * @return the route number with the minimum of avg of UVA and UVB exposure
+	 */
 	public static int getMinUVABRoute(Routes[] route)
 	{
 		double min=999;
@@ -81,162 +104,76 @@ public class Main {
 	public static void main(String args[]) throws Exception
 	{
 		
+		LatLong source;
+		LatLong destination;
 		
-		boolean testBoundingBox=false;
-		
-		if(testBoundingBox)
+		// set source and destination depending on the arguments passed
+		if(args.length==4 || Integer.parseInt(args[0]) == 0){
+			source = new LatLong(Double.parseDouble(args[0]), Double.parseDouble(args[1]));
+			destination = new LatLong(Double.parseDouble(args[2]), Double.parseDouble(args[3]));
+		}
+		else
 		{
-			// code for testing bounding box starts
-			LatLong p1 = new LatLong(34.066487,-118.453407);
-			//p1.setLatitude(34.064312);
-			//p1.setLongitude(-118.451921);
-			LatLong p2 = new LatLong(34.065705,-118.453107);
-			//p2.setLatitude(34.064159);
-			//p2.setLongitude(-118.452798);
-			BoundingBox x = new BoundingBox(20);
-			x.getBoundingBox(p1, p2);
-			System.out.println(x.getMin().getLatitude()+","+x.getMin().getLongitude()+"\n"
-					+x.getMax().getLatitude()+","+x.getMax().getLongitude());
-			// code to test bounding box ends
-			System.out.println(x.getDistance(p1, p2)+"");
-			String url = "jdbc:mysql://localhost:3306/project";
-	        String username = "adityauv";
-	        String password = "uvnavigation";
-			DatabaseOperations o = new DatabaseOperations(url, username, password);
-			o.getData(p1, p2);
-			
+			source = new LatLong(Double.parseDouble(args[1]), Double.parseDouble(args[2]));
+			destination = new LatLong(Double.parseDouble(args[3]), Double.parseDouble(args[4]));
+		}
+
+		String endpoint = "http://maps.googleapis.com/maps/api/directions/json";
+
+		String requestParameters = "sensor=false&mode=walking&alternatives=true&origin="+source.getLatitude()+","+source.getLongitude()+"&destination="+destination.getLatitude()+","+destination.getLongitude();
+		String googleMapsResult=  HttpSender.sendGetRequest(endpoint, requestParameters);
+
+		//System.out.println(googleMapsResult);
+		Routes[] allRoutes;
+
+		int numberOfRoutes = API_Parser.getNumberOfRoutes(googleMapsResult);
+		allRoutes = new Routes[numberOfRoutes];
+
+		JSONArray arr =  new JSONArray();
+
+		// initializing all routes
+		// print all the segments on the route
+		for(int i=0;i<allRoutes.length;i++)
+		{	
+			allRoutes[i] = new Routes();
+			allRoutes[i].setGoogleAPIJson(API_Parser.getRouteInformation(googleMapsResult, i));
+			allRoutes[i].initialize();
+			arr.put(i,allRoutes[i].getJson());
+			Step[] s = allRoutes[i].getSteps();
+		}
+
+		JSONObject obj = new JSONObject();
+		obj.put("routes", arr);
+
+
+		if(args.length==4 || Integer.parseInt(args[0]) == 0)
+			System.out.println(obj.toString());
+
+
+		else
+		{
+			// return JSON with the selected criteria
+			JSONObject output= new JSONObject();
+			int expectedOutput = Integer.parseInt(args[0]);
+
+			switch(expectedOutput)
+			{
+			case 1:
+				output.put("routes", allRoutes[getMinUVARoute(allRoutes)].getJson());
+				break;
+
+			case 2:
+				output.put("routes", allRoutes[getMinUVBRoute(allRoutes)].getJson());
+				break;
+
+			case 3:
+				output.put("routes", allRoutes[getMinUVABRoute(allRoutes)].getJson());
+				break;
+
+			}
+			System.out.println(output);
 
 		}
-		
-		
-		boolean testRoutes = true;
-		if(testRoutes)
-		{
-			LatLong source;
-			LatLong destination;
-			if(args.length==4 || Integer.parseInt(args[0]) == 0){
-				source = new LatLong(Double.parseDouble(args[0]), Double.parseDouble(args[1]));
-				destination = new LatLong(Double.parseDouble(args[2]), Double.parseDouble(args[3]));
-			}
-			else
-			{
-				source = new LatLong(Double.parseDouble(args[1]), Double.parseDouble(args[2]));
-				destination = new LatLong(Double.parseDouble(args[3]), Double.parseDouble(args[4]));
-			}
-			
-			String endpoint = "http://maps.googleapis.com/maps/api/directions/json";
-			
-			String requestParameters = "sensor=false&mode=walking&alternatives=true&origin="+source.getLatitude()+","+source.getLongitude()+"&destination="+destination.getLatitude()+","+destination.getLongitude();
-			String googleMapsResult=  HttpSender.sendGetRequest(endpoint, requestParameters);
-			
-			System.out.println(googleMapsResult);
-			Routes[] allRoutes;
-			
-			int numberOfRoutes = API_Parser.getNumberOfRoutes(googleMapsResult);
-			allRoutes = new Routes[numberOfRoutes];
-			
-			JSONArray arr =  new JSONArray();
-			
-			// initializing all routes
-			// print all the segments on the route
-			for(int i=0;i<allRoutes.length;i++)
-			{	
-				allRoutes[i] = new Routes();
-				allRoutes[i].setGoogleAPIJson(API_Parser.getRouteInformation(googleMapsResult, i));
-				allRoutes[i].initialize();
-				arr.put(i,allRoutes[i].getJson());
-				Step[] s = allRoutes[i].getSteps();
-				for(int k=0;k<s.length;k++)
-				{
-					Segment[]  seg= s[k].getSegments();
-					int j=0;
-					for(j=0;j<seg.length;j++)
-					{
-					//	System.out.print(seg[j].getStart_point());
-					//	System.out.println(","+seg[j].getUva()+","+seg[j].getUvb());
-					}
-					//System.out.println(seg[j-1].getEnd_point());
-					//System.out.println("-----------");
-				}
-				//System.out.println("------------------------");
-				
-				
-				//System.out.println(allRoutes[i].getJson());
-				//System.out.println(allRoutes[0]);
-			}
-			
-			JSONObject obj = new JSONObject();
-			obj.put("routes", arr);
-			
-			
-			
-			
-			//JSONObject minUVARoute = new JSONObject();
-			//minUVARoute.put("routes", allRoutes[minRoute].getJson());
-			
-			//System.out.println(minUVARoute);
-			//System.out.println("Min UVB route is "+getMinUVBRoute(allRoutes));
-			
-			
-			//System.out.println("Min UVA and UVB route is "+minUVABRoute);
-			
-			if(args.length==4 || Integer.parseInt(args[0]) == 0)
-				System.out.println(obj.toString());
-			
-			
-			else
-			{
-				JSONObject output= new JSONObject();
-				int expectedOutput = Integer.parseInt(args[0]);
-				
-				switch(expectedOutput)
-				{
-					case 1:
-						output.put("routes", allRoutes[getMinUVARoute(allRoutes)].getJson());
-						break;
-						
-					case 2:
-						output.put("routes", allRoutes[getMinUVBRoute(allRoutes)].getJson());
-						break;
-						
-					case 3:
-						output.put("routes", allRoutes[getMinUVABRoute(allRoutes)].getJson());
-						break;
-						
-				}
-				System.out.println(output);
-					
-				
-			}
-			
-			//database related
-//			String url = "jdbc:mysql://localhost:3306/project";
-//	        String username = "adityauv";
-//	        String password = "uvnavigation";
-//			DatabaseOperations o = new DatabaseOperations(url, username, password);
-			
-			
-			// database related ends
-	//		
-	//		
-	//		System.out.println(allRoutes[index].getJson().toString());
-	//		for(int i=0;i<allRoutes[index].getSteps().length;i++)
-	//		{
-	//			System.out.println("---------------------------------");
-	//			System.out.println(allRoutes[index].getSteps()[i].getJson().toString());
-	//			System.out.println("---------------------------------");
-	//			Segment[] d = allRoutes[index].getSteps()[i].getSegments();
-	//			
-	//			for(int j=0;j<d.length;j++)
-	//			{
-	//				System.out.println(d[j]);
-	//				//System.out.println(d[j].getStart_point());
-	//				//o.getData(d[j].getStart_point(), d[j].getEnd_point());
-	//				//System.out.println(d[j].getEnd_point());
-	//			}
-	//			
-	//		}
-		}
-		
 	}
+
 }

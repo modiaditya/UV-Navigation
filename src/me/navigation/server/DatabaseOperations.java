@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -21,6 +20,11 @@ import me.navigation.server.BoundingBox;
 import me.navigation.shared.LatLong;
 
 
+/**
+ * @author Aditya
+ * All database related operations are done from this class.
+ * Used as an abstaction layer for all database related calls
+ */
 public class DatabaseOperations {
 
 	

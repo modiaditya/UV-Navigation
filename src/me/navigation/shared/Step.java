@@ -12,6 +12,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * @author Aditya
+ * This class is used to initialize the step information and also initialize the segments and get/set UV data for each segment
+ * After the UV data for each segment is ready,  
+ */
 public class Step {
 	
 	private String googleAPIJson;
@@ -26,6 +31,10 @@ public class Step {
 	private final int minNoOfReadings = 6;
 	
 	
+	/**
+	 * @throws Exception
+	 * Used to initialize the Steps and also set the Steps
+	 */
 	public void initialize() throws Exception
 	{
 		JsonElement jElementStep = new JsonParser().parse(this.googleAPIJson);
@@ -39,23 +48,13 @@ public class Step {
 		
 		//used to set the UVA and UVB values depending on the segment readings
 		setUVValues();
-		//this.segments = new Segments[getNo_of_segments()];
-		//this.points= new UVData[this.getNo_of_segments()];
-		//this.setPoints();
+
 	}
 	
-//	public int getNo_of_segments() throws SocketTimeoutException
-//	{
-//		String endpoint = "http://www.yournavigation.org/api/1.0/gosmore.php";
-//		String parameters = "format=geojson&flat="+this.getStart_point().getLatitude()+"&flon="+this.getStart_point().getLongitude()+"&tlat="+this.getEnd_point().getLatitude()+"&tlon="+this.getEnd_point().getLongitude()+"&v=foot";
-//		
-//		String jsonLine = HttpSender.sendGetRequest(endpoint, parameters);
-//		
-//		JsonElement jElement = new JsonParser().parse(jsonLine);
-//		return jElement.getAsJsonObject().getAsJsonArray("coordinates").size();
-//		
-//	}
-	
+	/**
+	 * @throws Exception
+	 * Sets the end points for each segments and calls to initilize them
+	 */
 	public void setSegments() throws Exception
 	{
 		String endpoint = "http://www.yournavigation.org/api/1.0/gosmore.php";
@@ -97,16 +96,17 @@ public class Step {
 			segments[i].setEnd_point(p2);
 			one ="";
 			two ="";
+			// after the end points of the segments is set, it calls to initialize the segment
 			segments[i].initialize();
 		}
-		
-		//setSegmentUVValues();
-		
-		
 		
 		
 	}
 	
+	/**
+	 * Used to interpolate the UV values from the neighbors if number of points in the current segment are not more than or equal
+	 * to the minimum number of points required.
+	 */
 	private void setSegmentUVValues() {
 		
 		Segment[] segments = this.getSegments();
@@ -118,14 +118,16 @@ public class Step {
 		for(int i=0;i<segments.length;i++)
 		{
 			totalReadingsTillNow = 0;
+			// if the number of readings are greater than the minimum number of readings required, then just continue
 			if(segments[i].getNo_of_readings()>= minNoOfReadings)
 				continue;
 			
+			// else try to interpolate the readings from the neighbors
 			left  = i-1;
 			right = i+1;
 			count = 0;
+		
 			//set initial readings in the numerator and denominator
-			
 			numerator = weight*segments[i].getNo_of_readings()*segments[i].getUva();
 			denominator = segments[i].getNo_of_readings()*weight;
 			totalReadingsTillNow = segments[i].getNo_of_readings();
@@ -136,6 +138,7 @@ public class Step {
 				//search left
 				if(left >=0)
 				{
+					// increment the total readings count, adjust the numerator and the denominator
 					totalReadingsTillNow+=segments[left].getNo_of_readings();
 					numerator += weight*segments[left].getNo_of_readings()*segments[left].getUva();
 					denominator+= segments[left].getNo_of_readings()*weight;
@@ -146,6 +149,7 @@ public class Step {
 				//search right
 				if(right< segments.length)
 				{
+					// increment the total readings count, adjust the numerator and the denominator
 					totalReadingsTillNow+=segments[right].getNo_of_readings();
 					numerator += weight*segments[right].getNo_of_readings()*segments[right].getUva();
 					denominator+= segments[right].getNo_of_readings()*weight;
@@ -163,6 +167,9 @@ public class Step {
 		
 	}
 
+	/**
+	 * Take the average of readings of points in each segment and set is as the UV exposure for that segment
+	 */
 	private void setUVValues() {
 		
 		int segmentLength = segments.length;
@@ -182,6 +189,11 @@ public class Step {
 		
 	}
 
+	
+	/**
+	 * @return JSONObject, all the route information is encoded.
+	 * @throws JSONException
+	 */
 	public JSONObject getJson() throws JSONException
 	{
 		JSONObject obj = new JSONObject();

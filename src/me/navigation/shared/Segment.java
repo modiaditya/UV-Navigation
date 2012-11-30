@@ -18,6 +18,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * @author Aditya
+ * This class is used to initialize the segments by calling the database to get the UV values of points inside the segment object.
+ */
 public class Segment {
 
 	private LatLong start_location;
@@ -26,12 +30,13 @@ public class Segment {
 	private double uvb=0;
 	private int no_of_readings=0;
 	
+	/**
+	 * @throws SQLException
+	 * Initialize the segment by getting the readings for each segment
+	 */
 	public void initialize() throws SQLException
 	{
 		getReadings();
-		//DatabaseOperations o = new DatabaseOperations();
-		//o.getData(start_point, end_point);
-		
 	}
 	
 	@Override
@@ -41,27 +46,24 @@ public class Segment {
 		
 	}
 	
-//	public JsonObject getJson()
-//	{
-//		//JSONObject obj = new JSONObject();
-//		//JsonObject lat = new JsonObject();
-//		//JsonObject lng = new JsonObject();
-//		//lat.add("Lat", start_point.getLatitude());
-//		//lng.add("Lng",start_point.getLongitude());
-//		
-//		
-//		
-//	}
 	
+	/**
+	 * @throws SQLException
+	 * sets the UVA and UVB values for each segment by calling the database and getting 
+	 * the UV values of points in each segment and then taking an average of points
+	 */
 	public void getReadings() throws SQLException
 	{
+    	final int feetVariance = 20;
 		Connection con = null;
 	    String url = "jdbc:mysql://localhost:3306/project";
         String username = "adityauv";
         String password = "uvnavigation";
         
         con = DriverManager.getConnection(url, username, password);
-    	BoundingBox x = new BoundingBox(20);
+		
+        // Bounding box is used to counter for the variance of error on the GPS data points
+        BoundingBox x = new BoundingBox(feetVariance);
     	x.getBoundingBox(this.getStart_point(), this.getEnd_point());
     	LatLong min = x.getMin();
     	LatLong max = x.getMax();
