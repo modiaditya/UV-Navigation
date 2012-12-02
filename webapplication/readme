@@ -1,0 +1,16 @@
+Installation Steps:
+1. Install PHP
+2. Install mysql
+3. create a user in mysql
+	username: adityauv
+	password: uvnavigation
+4. import the database 
+	a. Either run the sql script in the current folder
+	b. Or create a database project and table uvReadings with a structure similar to the
+	one in the sql script and then import the data using the csv file
+5. run Test.java to check whether the database is configured properly.
+6. If the file does not give any error and just throws exception, then check whats wrong
+	with the database
+7. paste the webapplication folder from where you can execute php files.
+8. run the getPhp.html file
+9. you should check the output on the screen
