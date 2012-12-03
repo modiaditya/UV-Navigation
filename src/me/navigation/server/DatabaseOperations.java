@@ -54,7 +54,7 @@ public class DatabaseOperations {
     	LatLong max = x.getMax();
     	
     	String sql = "select distinct Latitude, Longitude, UVA1, UVA2, UVB1, UVB2 " +
-    				"from uvReadings_copy where Time > '2012-10-22' " +
+    				"from uvReadings where Time > '2012-10-22' " +
     				"and UVB1 > 7.289  and Latitude > ?  and Longitude > ? " +
     				"and Latitude < ? and Longitude < ?";
     	PreparedStatement p = con.prepareStatement(sql);
